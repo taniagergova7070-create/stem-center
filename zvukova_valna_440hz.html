@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Звукова вълна — 440 Hz</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #0f0f1a;
+    color: #e8e6f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #8884aa;
+    margin-bottom: 28px;
+  }
+  .card {
+    background: #1a1a2e;
+    border: 1px solid #2e2a50;
+    border-radius: 16px;
+    padding: 28px 32px;
+    width: 100%;
+    max-width: 820px;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    background: #12121f;
+    margin-bottom: 20px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .stat {
+    background: #12121f;
+    border: 1px solid #2e2a50;
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: #7070a0;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .stat-val {
+    font-size: 20px;
+    font-weight: 600;
+    color: #c8c0ff;
+  }
+  .controls { display: flex; flex-direction: column; gap: 14px; margin-bottom: 22px; }
+  .ctrl { display: flex; align-items: center; gap: 14px; }
+  .ctrl label { font-size: 13px; color: #9090b8; min-width: 130px; }
+  .ctrl input[type=range] {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #2e2a50;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  .ctrl input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #7f77dd;
+    cursor: pointer;
+    border: 2px solid #0f0f1a;
+  }
+  .ctrl span {
+    min-width: 64px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: right;
+  }
+  .btn-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  button {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: 1px solid #534ab7;
+    background: #1e1a3a;
+    color: #c8c0ff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.02em;
+  }
+  button:hover { background: #2a2450; }
+  button:active { transform: scale(0.97); }
+  button.playing { background: #534ab7; color: #fff; border-color: #7f77dd; }
+  .hint { font-size: 12px; color: #7070a0; flex: 1; }
+  .note-pills {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px;
+  }
+  .pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #2e2a50;
+    font-size: 12px;
+    color: #9090c8;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    background: #12121f;
+  }
+  .pill:hover { background: #2e2a50; color: #e0d8ff; border-color: #534ab7; }
+  .pill.active { background: #534ab7; color: #fff; border-color: #7f77dd; }
+  .pills-label { font-size: 12px; color: #7070a0; margin-top: 16px; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<h1>Звукова вълна</h1>
+<p class="subtitle">Интерактивна визуализация · STEM Център</p>
+
+<div class="card">
+  <canvas id="wc"></canvas>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Честота</div><div class="stat-val" id="sv-f">440 Hz</div></div>
+    <div class="stat"><div class="stat-label">Дължина λ</div><div class="stat-val" id="sv-l">0.78 m</div></div>
+    <div class="stat"><div class="stat-label">Период T</div><div class="stat-val" id="sv-t">2.27 ms</div></div>
+    <div class="stat"><div class="stat-label">Нота</div><div class="stat-val" id="sv-n">Ла A4</div></div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl">
+      <label>Честота (Hz)</label>
+      <input type="range" id="freq" min="110" max="880" step="1" value="440">
+      <span id="fv">440 Hz</span>
+    </div>
+    <div class="ctrl">
+      <label>Амплитуда</label>
+      <input type="range" id="amp" min="10" max="85" step="1" value="60">
+      <span id="av">60</span>
+    </div>
+    <div class="ctrl">
+      <label>Скорост на анимация</label>
+      <input type="range" id="spd" min="0.2" max="3" step="0.1" value="1">
+      <span id="spv">1.0×</span>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button id="play-btn">▶ Пусни тон</button>
+    <span class="hint">Промени честотата — вълната и тонът се обновяват в реално време.</span>
+  </div>
+
+  <p class="pills-label">Бързи ноти — кликни за да чуеш:</p>
+  <div class="note-pills" id="pills"></div>
+</div>
+
+<script>
+const NOTES = [
+  [110,'Ла A2'],[165,'Ми E3'],[220,'Ла A3'],[262,'До C4'],
+  [294,'Ре D4'],[330,'Ми E4'],[349,'Фа F4'],[392,'Сол G4'],
+  [440,'Ла A4'],[494,'Си B4'],[523,'До C5'],[587,'Ре D5'],
+  [659,'Ми E5'],[784,'Сол G5'],[880,'Ла A5']
+];
+
+function nearestNote(f) {
+  return NOTES.reduce((a,b) => Math.abs(b[0]-f) < Math.abs(a[0]-f) ? b : a)[1];
+}
+
+const pillsEl = document.getElementById('pills');
+NOTES.forEach(([f, name]) => {
+  const p = document.createElement('div');
+  p.className = 'pill' + (f === 440 ? ' active' : '');
+  p.textContent = name + ' · ' + f;
+  p.addEventListener('click', () => {
+    document.getElementById('freq').value = f;
+    document.getElementById('fv').textContent = f + ' Hz';
+    updateStats(f);
+    if (osc) osc.frequency.setTargetAtTime(f, audioCtx.currentTime, 0.01);
+    document.querySelectorAll('.pill').forEach(el => el.classList.remove('active'));
+    p.classList.add('active');
+    if (!playing) toggleTone();
+  });
+  pillsEl.appendChild(p);
+});
+
+const canvas = document.getElementById('wc');
+const ctx2d = canvas.getContext('2d');
+let phase = 0;
+
+function resize() {
+  canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
+  canvas.height = 200 * (window.devicePixelRatio || 1);
+  ctx2d.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+}
+resize();
+window.addEventListener('resize', resize);
+
+function updateStats(f) {
+  document.getElementById('sv-f').textContent = f + ' Hz';
+  document.getElementById('sv-l').textContent = (343/f).toFixed(2) + ' m';
+  document.getElementById('sv-t').textContent = (1000/f).toFixed(2) + ' ms';
+  document.getElementById('sv-n').textContent = nearestNote(f);
+}
+
+function draw() {
+  const W = canvas.offsetWidth, H = 200;
+  ctx2d.clearRect(0, 0, W, H);
+
+  const f   = +document.getElementById('freq').value;
+  const A   = +document.getElementById('amp').value;
+  const spd = +document.getElementById('spd').value;
+  const midY = H / 2;
+
+  ctx2d.strokeStyle = '#2e2a50';
+  ctx2d.lineWidth = 0.5;
+  ctx2d.beginPath(); ctx2d.moveTo(0, midY); ctx2d.lineTo(W, midY); ctx2d.stroke();
+
+  const cycles = Math.max(2, Math.min(7, f / 110));
+  const waveLen = W / cycles;
+
+  ctx2d.strokeStyle = '#7f77dd';
+  ctx2d.lineWidth = 3;
+  ctx2d.shadowColor = '#534ab7';
+  ctx2d.shadowBlur = 8;
+  ctx2d.beginPath();
+  for (let x = 0; x <= W; x++) {
+    const y = midY - A * Math.sin(2 * Math.PI * x / waveLen + phase);
+    x === 0 ? ctx2d.moveTo(x, y) : ctx2d.lineTo(x, y);
+  }
+  ctx2d.stroke();
+  ctx2d.shadowBlur = 0;
+
+  const arrowY = midY + A + 28;
+  ctx2d.strokeStyle = '#1d9e75';
+  ctx2d.lineWidth = 1.5;
+  ctx2d.beginPath(); ctx2d.moveTo(24, arrowY); ctx2d.lineTo(24 + waveLen, arrowY); ctx2d.stroke();
+  [24, 24 + waveLen].forEach(x => {
+    ctx2d.beginPath(); ctx2d.moveTo(x, arrowY - 5); ctx2d.lineTo(x, arrowY + 5); ctx2d.stroke();
+  });
+  ctx2d.fillStyle = '#1d9e75';
+  ctx2d.font = 'bold 12px Arial';
+  ctx2d.textAlign = 'center';
+  ctx2d.fillText('λ = ' + (343/f).toFixed(2) + ' m', 24 + waveLen/2, arrowY + 16);
+
+  const ampX = W - 28;
+  ctx2d.strokeStyle = '#d85a30';
+  ctx2d.lineWidth = 1.5;
+  ctx2d.beginPath(); ctx2d.moveTo(ampX, midY); ctx2d.lineTo(ampX, midY - A); ctx2d.stroke();
+  ctx2d.fillStyle = '#d85a30';
+  ctx2d.font = 'bold 12px Arial';
+  ctx2d.textAlign = 'right';
+  ctx2d.fillText('A', ampX - 5, midY - A/2 + 4);
+
+  phase += 0.04 * spd;
+  requestAnimationFrame(draw);
+}
+draw();
+
+document.getElementById('freq').addEventListener('input', () => {
+  const f = +document.getElementById('freq').value;
+  document.getElementById('fv').textContent = f + ' Hz';
+  updateStats(f);
+  if (osc) osc.frequency.setTargetAtTime(f, audioCtx.currentTime, 0.01);
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+});
+document.getElementById('amp').addEventListener('input',  () => { document.getElementById('av').textContent  = document.getElementById('amp').value; });
+document.getElementById('spd').addEventListener('input',  () => { document.getElementById('spv').textContent = (+document.getElementById('spd').value).toFixed(1) + '×'; });
+
+let audioCtx, osc, gainNode, playing = false;
+function toggleTone() {
+  const btn = document.getElementById('play-btn');
+  if (!playing) {
+    audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode  = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 0.06);
+    osc = audioCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = +document.getElementById('freq').value;
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    osc.start();
+    playing = true;
+    btn.textContent = '■ Спри тона';
+    btn.classList.add('playing');
+  } else {
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.06);
+    setTimeout(() => { try { osc.stop(); audioCtx.close(); } catch(e){} }, 120);
+    playing = false; osc = null; gainNode = null;
+    btn.textContent = '▶ Пусни тон';
+    btn.classList.remove('playing');
+  }
+}
+document.getElementById('play-btn').addEventListener('click', toggleTone);
+updateStats(440);
+</script>
+</body>
+</html>
