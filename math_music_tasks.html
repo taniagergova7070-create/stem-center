@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Математика и Музика — Геометрична Редица</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c10;
+    --surface: #141418;
+    --surface2: #1c1c22;
+    --border: #2a2a35;
+    --border2: #3a3a48;
+    --purple: #7c6ff0;
+    --purple-light: #a89ef5;
+    --purple-dim: #2d2850;
+    --teal: #2dd4a4;
+    --teal-dim: #0d3328;
+    --amber: #f0a830;
+    --amber-dim: #2e2010;
+    --red: #f07060;
+    --text: #e8e6f2;
+    --text2: #9896b0;
+    --text3: #5a5870;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+  }
+  .header-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--purple-light);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--purple);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  h1 span { color: var(--purple-light); }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--text2);
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 560px;
+  }
+
+  /* Formula banner */
+  .formula-banner {
+    background: var(--purple-dim);
+    border: 1px solid var(--purple);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .formula-main {
+    font-family: var(--mono);
+    font-size: 20px;
+    color: var(--purple-light);
+    font-weight: 700;
+  }
+  .formula-explain {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+    flex: 1;
+    min-width: 200px;
+  }
+  .formula-explain strong { color: var(--text); }
+
+  /* Task cards */
+  .task {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .task::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .task-1::before { background: var(--purple); }
+  .task-2::before { background: var(--teal); }
+  .task-3::before { background: var(--amber); }
+
+  .task:hover { border-color: var(--border2); }
+
+  .task-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .task-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .num-1 { background: var(--purple-dim); color: var(--purple-light); border: 1px solid var(--purple); }
+  .num-2 { background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal); }
+  .num-3 { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); }
+
+  .task-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .task-title small {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text2);
+    margin-top: 3px;
+    font-family: var(--mono);
+  }
+
+  .task-body {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 18px;
+  }
+  .task-body strong { color: var(--text); font-weight: 500; }
+  .task-body em { color: var(--purple-light); font-style: normal; font-family: var(--mono); }
+
+  /* Note pills */
+  .note-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 14px 0;
+  }
+  .npill {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .npill:hover { border-color: var(--purple); color: var(--purple-light); }
+  .npill.active { background: var(--purple-dim); border-color: var(--purple); color: var(--purple-light); }
+
+  /* Formula display */
+  .formula-display {
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--purple-light);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    min-height: 44px;
+    transition: border-color 0.2s;
+  }
+  .formula-display.solved { border-color: var(--teal); color: var(--teal); }
+
+  /* Bars chart */
+  .bars-section { margin: 16px 0; }
+  .bars-wrap {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 100px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .bar-col { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .bar {
+    width: 32px;
+    background: var(--border2);
+    border-radius: 3px 3px 0 0;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    position: relative;
+  }
+  .bar:hover { background: var(--purple); transform: scaleY(1.03); transform-origin: bottom; }
+  .bar.hi { background: var(--teal); }
+  .bar.lo { background: var(--amber); }
+  .bar-name {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--text3);
+    margin-top: 6px;
+    text-align: center;
+    width: 32px;
+  }
+  .diff-info {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text2);
+    min-height: 20px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: 6px;
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+
+  /* Answer row */
+  .ans-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .ans-label {
+    font-size: 13px;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+  input[type=number], input[type=text] {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 9px 14px;
+    width: 160px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--purple); }
+  .check-btn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .check-btn:hover { border-color: var(--purple); color: var(--purple-light); background: var(--purple-dim); }
+  .check-btn:active { transform: scale(0.97); }
+
+  /* Feedback */
+  .feedback {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    min-height: 0;
+    display: none;
+  }
+  .feedback.ok  { display: block; background: var(--teal-dim); color: var(--teal); border: 1px solid var(--teal); }
+  .feedback.err { display: block; background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); }
+
+  /* Hint */
+  .hint-toggle {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .hint-toggle:hover { color: var(--text2); border-color: var(--border2); }
+  .hint-box {
+    display: none;
+    font-size: 13px;
+    color: var(--text2);
+    background: var(--surface2);
+    border-left: 2px solid var(--purple);
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 10px;
+    line-height: 1.65;
+  }
+  .hint-box strong { color: var(--purple-light); }
+
+  /* Mystery note */
+  .mystery-f {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--amber);
+    display: block;
+    margin: 8px 0 4px;
+  }
+
+  /* Score strip */
+  .score-strip {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 100;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .score-item { display: flex; align-items: center; gap: 8px; }
+  .score-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); transition: background 0.3s; }
+  .score-dot.done { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+  .score-val { color: var(--teal); font-weight: 700; font-size: 16px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    .container { padding: 24px 16px 80px; }
+    .bars-wrap { gap: 2px; }
+    .bar { width: 24px; }
+    .bar-name { width: 24px; font-size: 7px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-tag">STEM Център · Математика + Музика · 9–11 клас</div>
+    <h1>Геометрична редица<br><span>скрита в музиката</span></h1>
+    <p class="header-sub">Честотите на нотите не са наредени равномерно — зад тях стои точна математическа структура. Три задачи, за да я открием.</p>
+  </div>
+
+  <div class="formula-banner">
+    <div class="formula-main">f<sub>n</sub> = f₀ · 2<sup>(n/12)</sup></div>
+    <div class="formula-explain">
+      <strong>Геометрична редица</strong> с квотиент q = 2<sup>1/12</sup> ≈ 1.05946<br>
+      Всяка нота е ~5.946% по-висока от предишната · 12 полутона = 1 октава · 1 октава = ×2 честота
+    </div>
+  </div>
+
+  <!-- TASK 1 -->
+  <div class="task task-1">
+    <div class="task-header">
+      <div class="task-num num-1">ЗАДАЧА 01</div>
+      <div class="task-title">
+        Изчисли честотата на нота
+        <small>f_n = 440 · 2^(n/12) &nbsp;·&nbsp; прилагане на формулата</small>
+      </div>
+    </div>
+    <div class="task-body">
+      Ла A4 = <strong>440 Hz</strong> е нашата отправна точка (n = 0).<br>
+      Избери нота и изчисли нейната честота с формулата. <em>n</em> е броят полутони от Ла A4.
+    </div>
+
+    <div class="note-grid" id="note-btns"></div>
+    <div class="formula-display" id="formula1">← избери нота</div>
+
+    <div class="ans-row">
+      <span class="ans-label">Честота (Hz):</span>
+      <input type="number" id="ans1" placeholder="0.00" step="0.01">
+      <button class="check-btn" onclick="check1()">Провери</button>
+    </div>
+    <div class="feedback" id="fb1"></div>
+    <button class="hint-toggle" onclick="toggleHint('h1',this)">▸ подсказка</button>
+    <div class="hint-box" id="h1">
+      Брой полутоните от Ла A4 до избраната нота (нагоре = +, надолу = −).<br>
+      <strong>2^(n/12)</strong> изчисли с калкулатор: 2^(−7/12) = 0.6674, 2^(2/12) = 1.1225 и т.н.<br>
+      Умножи резултата по 440.
+    </div>
+  </div>
+
+  <!-- TASK 2 -->
+  <div class="task task-2">
+    <div class="task-header">
+      <div class="task-num num-2">ЗАДАЧА 02</div>
+      <div class="task-title">
+        Открий закономерността
+        <small>анализ на разликите · геометрична срещу аритметична редица</small>
+      </div>
+    </div>
+    <div class="task-body">
+      Ето 12-те ноти от До C4 до Си B4. Кликни върху всяка лента за да видиш разликата до следващата нота.<br>
+      <strong>Въпрос:</strong> Разликата в Hz расте ли, намалява ли, или е константна? Защо?
+    </div>
+
+    <div class="bars-section">
+      <div class="bars-wrap" id="bars"></div>
+      <div id="bar-names" style="display:flex; gap:4px;"></div>
+      <div class="diff-info" id="diff-info">← кликни върху лента за детайли</div>
+    </div>
+
+    <div class="ans-row">
+      <span class="ans-label">Най-малка разлика между:</span>
+      <input type="text" id="ans2" placeholder="Нота — Нота" style="width:170px">
+      <button class="check-btn" onclick="check2()">Провери</button>
+    </div>
+    <div class="feedback" id="fb2"></div>
+    <button class="hint-toggle" onclick="toggleHint('h2',this)">▸ подсказка</button>
+    <div class="hint-box" id="h2">
+      Квотиентът q = 1.0595 е <strong>множител</strong>, не събирател.<br>
+      При ниска честота: 5.95% от 261 Hz ≈ 15.5 Hz<br>
+      При висока честота: 5.95% от 493 Hz ≈ 29.4 Hz<br>
+      → Абсолютната разлика расте, въпреки че процентът е константен. Това е ключовата разлика между геометрична и аритметична редица.
+    </div>
+  </div>
+
+  <!-- TASK 3 -->
+  <div class="task task-3">
+    <div class="task-header">
+      <div class="task-num num-3">ЗАДАЧА 03</div>
+      <div class="task-title">
+        Обратна задача — намери нотата
+        <small>n = 12 · log₂(f / 440) &nbsp;·&nbsp; приложение на логаритми</small>
+      </div>
+    </div>
+    <div class="task-body">
+      Дадена е само честотата. Намери на колко полутона разстояние е от Ла A4 = 440 Hz.<br>
+      <strong>Формула:</strong> <em>n = 12 · log₂(f / 440) = 12 · ln(f/440) / ln(2)</em>
+    </div>
+
+    <div style="margin: 16px 0 8px;">
+      <span style="font-size:13px; color:var(--text2);">Честотата е:</span>
+      <span class="mystery-f" id="mystery-f">—</span>
+      <span style="font-size:13px; color:var(--text3); font-family:var(--mono);" id="mystery-hint"></span>
+    </div>
+
+    <div class="ans-row">
+      <span class="ans-label">Брой полутони (n):</span>
+      <input type="number" id="ans3" placeholder="±n" step="1">
+      <button class="check-btn" onclick="check3()">Провери</button>
+      <button class="check-btn" onclick="newMystery()" style="border-color:var(--amber); color:var(--amber);">Нова нота</button>
+    </div>
+    <div class="feedback" id="fb3"></div>
+    <button class="hint-toggle" onclick="toggleHint('h3',this)">▸ подсказка</button>
+    <div class="hint-box" id="h3">
+      <strong>log₂(x)</strong> = ln(x) / ln(2) = log(x) / log(2)<br>
+      Стъпки: (1) раздели f / 440 → (2) вземи log₂ → (3) умножи по 12 → (4) закръгли до цяло.<br>
+      Ако n е отрицателно — нотата е под Ла A4. Ако е положително — над нея.<br>
+      <strong>Реалното приложение:</strong> точно тази формула използва всяко приложение за тунинг и Shazam.
+    </div>
+  </div>
+
+</div>
+
+<!-- Score strip -->
+<div class="score-strip">
+  <div class="score-item">
+    <div class="score-dot" id="dot1"></div>
+    <span>Задача 1</span>
+  </div>
+  <div class="score-item">
+    <div class="score-dot" id="dot2"></div>
+    <span>Задача 2</span>
+  </div>
+  <div class="score-item">
+    <div class="score-dot" id="dot3"></div>
+    <span>Задача 3</span>
+  </div>
+  <div style="width:1px; height:20px; background:var(--border);"></div>
+  <div class="score-item">
+    <span>Резултат:</span>
+    <span class="score-val" id="score">0 / 3</span>
+  </div>
+</div>
+
+<script>
+const NOTES_T1 = [
+  {name:'До C4',   n:-9, f:261.63},
+  {name:'Ре D4',   n:-7, f:293.66},
+  {name:'Ми E4',   n:-5, f:329.63},
+  {name:'Фа F4',   n:-4, f:349.23},
+  {name:'Сол G4',  n:-2, f:392.00},
+  {name:'Си B4',   n:2,  f:493.88},
+  {name:'До C5',   n:3,  f:523.25},
+  {name:'Ре D5',   n:5,  f:587.33}
+];
+
+const CHROMATIC = [
+  {name:'До C4',   short:'C4',  f:261.63},
+  {name:'До# C#4', short:'C#4', f:277.18},
+  {name:'Ре D4',   short:'D4',  f:293.66},
+  {name:'Ре# D#4', short:'D#4', f:311.13},
+  {name:'Ми E4',   short:'E4',  f:329.63},
+  {name:'Фа F4',   short:'F4',  f:349.23},
+  {name:'Фа# F#4', short:'F#4', f:369.99},
+  {name:'Сол G4',  short:'G4',  f:392.00},
+  {name:'Сол# G#4',short:'G#4', f:415.30},
+  {name:'Ла A4',   short:'A4',  f:440.00},
+  {name:'Ла# A#4', short:'A#4', f:466.16},
+  {name:'Си B4',   short:'B4',  f:493.88}
+];
+
+const MYSTERY_POOL = [
+  {f:277.18, n:-9, name:'До# C#4'},
+  {f:311.13, n:-6, name:'Ре# D#4'},
+  {f:369.99, n:-3, name:'Фа# F#4'},
+  {f:415.30, n:-1, name:'Сол# G#4'},
+  {f:466.16, n:1,  name:'Ла# A#4'},
+  {f:523.25, n:3,  name:'До C5'},
+  {f:554.37, n:4,  name:'До# C#5'},
+  {f:622.25, n:6,  name:'Ре# D#5'}
+];
+
+let solved = [false, false, false];
+let selectedNote = null;
+let mystery = null;
+
+function updateScore() {
+  const n = solved.filter(Boolean).length;
+  document.getElementById('score').textContent = n + ' / 3';
+  solved.forEach((s,i) => {
+    document.getElementById('dot'+(i+1)).classList.toggle('done', s);
+  });
+}
+
+// Task 1 — note pills
+const nb = document.getElementById('note-btns');
+NOTES_T1.forEach(note => {
+  const p = document.createElement('div');
+  p.className = 'npill';
+  p.textContent = note.name + ' (' + (note.n > 0 ? '+' : '') + note.n + ')';
+  p.onclick = () => {
+    document.querySelectorAll('.npill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    selectedNote = note;
+    document.getElementById('formula1').textContent =
+      'f = 440 · 2^(' + note.n + '/12) = ?';
+    document.getElementById('formula1').classList.remove('solved');
+    document.getElementById('fb1').className = 'feedback';
+    document.getElementById('ans1').value = '';
+  };
+  nb.appendChild(p);
+});
+
+function check1() {
+  const fb = document.getElementById('fb1');
+  if (!selectedNote) {
+    fb.className = 'feedback err';
+    fb.textContent = 'Избери нота от списъка.';
+    return;
+  }
+  const ans = parseFloat(document.getElementById('ans1').value);
+  if (isNaN(ans)) { fb.className='feedback err'; fb.textContent='Въведи число.'; return; }
+  const diff = Math.abs(ans - selectedNote.f);
+  if (diff < 2) {
+    fb.className = 'feedback ok';
+    fb.textContent = '✓ Правилно! ' + selectedNote.name + ' = ' + selectedNote.f.toFixed(2) + ' Hz. Квотиентът 2^(1/12) ≈ 1.05946 умножен ' + Math.abs(selectedNote.n) + ' пъти дава точно тази стойност.';
+    document.getElementById('formula1').textContent = 'f = 440 · 2^(' + selectedNote.n + '/12) = ' + selectedNote.f.toFixed(2) + ' Hz ✓';
+    document.getElementById('formula1').classList.add('solved');
+    if (!solved[0]) { solved[0] = true; updateScore(); }
+  } else {
+    fb.className = 'feedback err';
+    fb.textContent = '✗ Не съвсем. Резултатът е близо до ' + Math.round(selectedNote.f) + ' Hz. Провери изчислението на 2^(' + selectedNote.n + '/12).';
+  }
+}
+
+// Task 2 — bars
+const barsEl = document.getElementById('bars');
+const barNamesEl = document.getElementById('bar-names');
+const maxF = Math.max(...CHROMATIC.map(n=>n.f));
+const minF = Math.min(...CHROMATIC.map(n=>n.f));
+
+CHROMATIC.forEach((note, i) => {
+  const pct = (note.f - minF) / (maxF - minF);
+  const h = Math.round(16 + pct * 76);
+
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  bar.style.height = h + 'px';
+  bar.title = note.name + ': ' + note.f.toFixed(2) + ' Hz';
+  bar.onclick = () => {
+    document.querySelectorAll('.bar').forEach(b => b.classList.remove('hi','lo'));
+    bar.classList.add('hi');
+    const diffInfo = document.getElementById('diff-info');
+    if (i < CHROMATIC.length - 1) {
+      const next = CHROMATIC[i+1];
+      const diff = (next.f - note.f).toFixed(2);
+      const pct2 = ((next.f / note.f - 1) * 100).toFixed(2);
+      diffInfo.textContent = note.name + ' (' + note.f.toFixed(2) + ' Hz) → ' + next.name + ' (' + next.f.toFixed(2) + ' Hz)  ·  разлика: ' + diff + ' Hz  ·  ' + pct2 + '%';
+      if (i === 0) { bar.classList.remove('hi'); bar.classList.add('lo'); }
+    } else {
+      diffInfo.textContent = note.name + ' = ' + note.f.toFixed(2) + ' Hz  (последна нота в редицата)';
+    }
+  };
+  barsEl.appendChild(bar);
+
+  const lbl = document.createElement('div');
+  lbl.style.cssText = 'font-family:var(--mono);font-size:8px;color:var(--text3);width:32px;text-align:center;margin-top:4px;';
+  lbl.textContent = note.short;
+  barNamesEl.appendChild(lbl);
+});
+
+function check2() {
+  const fb = document.getElementById('fb2');
+  const ans = document.getElementById('ans2').value.trim().toLowerCase();
+  const keywords = ['до c4','c4','до#','c#','c#4','до c#','до c4 — до#'];
+  const match = keywords.some(k => ans.includes(k.toLowerCase().replace(' ','')) || ans.includes(k.toLowerCase()));
+  const hasC4 = ans.includes('до') || ans.includes('c4') || ans.includes('261');
+  if (hasC4) {
+    fb.className = 'feedback ok';
+    fb.textContent = '✓ Точно! До C4–До# C#4 имат разлика само 15.55 Hz — най-малката. При по-висок регистър разликата расте: Ла# A#4–Си B4 = 27.72 Hz. Процентът е винаги ~5.95%, но абсолютната стойност зависи от основата — това е същността на геометричната редица.';
+    if (!solved[1]) { solved[1] = true; updateScore(); }
+    const bars = document.querySelectorAll('.bar');
+    bars[0].classList.add('lo');
+  } else {
+    fb.className = 'feedback err';
+    fb.textContent = '✗ Погледни най-левите ленти — те представят най-ниските честоти. Кои две съседни имат най-малка абсолютна разлика?';
+  }
+}
+
+// Task 3 — mystery
+function newMystery() {
+  mystery = MYSTERY_POOL[Math.floor(Math.random() * MYSTERY_POOL.length)];
+  document.getElementById('mystery-f').textContent = mystery.f.toFixed(2) + ' Hz';
+  document.getElementById('mystery-hint').textContent = '';
+  document.getElementById('ans3').value = '';
+  document.getElementById('fb3').className = 'feedback';
+}
+newMystery();
+
+function check3() {
+  const fb = document.getElementById('fb3');
+  const ans = parseInt(document.getElementById('ans3').value);
+  if (isNaN(ans)) { fb.className='feedback err'; fb.textContent='Въведи цяло число.'; return; }
+  if (ans === mystery.n) {
+    fb.className = 'feedback ok';
+    fb.textContent = '✓ Правилно! ' + mystery.f.toFixed(2) + ' Hz = ' + mystery.name + ' · n = ' + (mystery.n>0?'+':'') + mystery.n + ' полутона от Ла A4. Обратният логаритъм е основата на всяка система за разпознаване на тон — от китарен тунер до Shazam.';
+    document.getElementById('mystery-hint').textContent = '= ' + mystery.name;
+    if (!solved[2]) { solved[2] = true; updateScore(); }
+  } else {
+    const correct = (12 * Math.log2(mystery.f / 440)).toFixed(2);
+    fb.className = 'feedback err';
+    fb.textContent = '✗ Провери: 12 · log₂(' + mystery.f.toFixed(2) + '/440) = 12 · log₂(' + (mystery.f/440).toFixed(4) + ') = ' + correct + ' → закръгли до цяло.';
+  }
+}
+
+function toggleHint(id, btn) {
+  const el = document.getElementById(id);
+  const show = el.style.display !== 'block';
+  el.style.display = show ? 'block' : 'none';
+  btn.textContent = show ? '▾ скрий подсказка' : '▸ подсказка';
+}
+
+updateScore();
+</script>
+</body>
+</html>
