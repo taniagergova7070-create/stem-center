@@ -247,8 +247,26 @@ function nextStage() {
   if (stage < 2) setStage(stage + 1);
 }
 
+function clearCanvas(id) {
+  const canvas = document.getElementById(id);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 function resetAll() {
-  setStage(0);
+  phase = 0;
+  clearCanvas('c1');
+  clearCanvas('c2');
+  [0,1,2].forEach(i => {
+    document.getElementById('pill-'+i).classList.toggle('active', i===0);
+    document.getElementById('panel-'+i).classList.toggle('active-panel', i===0);
+    document.getElementById('sd'+i).classList.toggle('on', i===0);
+  });
+  document.getElementById('info').innerHTML = INFOS[0];
+  const btn = document.getElementById('btn-next');
+  btn.disabled = false;
+  btn.textContent = 'Следваща стъпка →';
+  stage = 0;
 }
 
 function resize(canvas) {
