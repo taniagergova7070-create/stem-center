@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Материя и Звук — v = √(E/ρ)</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0c0c10;
+    --s1:      #141418;
+    --s2:      #1c1c22;
+    --border:  #2a2a35;
+    --border2: #3a3a48;
+    --green:   #2dd4a4;
+    --green-d: #085041;
+    --green-b: #0d3328;
+    --purple:  #7c6ff0;
+    --purple-d:#3C3489;
+    --purple-l:#a89ef5;
+    --amber:   #f0a830;
+    --amber-d: #633806;
+    --text:    #e8e6f2;
+    --text2:   #9896b0;
+    --text3:   #5a5870;
+    --mono:    'Space Mono', monospace;
+    --sans:    'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px 60px;
+  }
+
+  /* Header */
+  .hdr-tag {
+    font-family: var(--mono);
+    font-size: 11px; color: var(--green);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hdr-tag::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--green); border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(20px, 3.5vw, 30px);
+    font-weight: 700; line-height: 1.2;
+    color: var(--text); margin-bottom: 6px;
+  }
+  h1 span { color: var(--green); }
+
+  .hdr-sub {
+    font-size: 14px; color: var(--text2);
+    font-weight: 300; margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* Formula banner */
+  .formula-banner {
+    background: var(--s1);
+    border: 1px solid var(--purple);
+    border-radius: 12px;
+    padding: 16px 22px;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .formula-main {
+    font-family: var(--mono);
+    font-size: 22px; color: var(--purple-l);
+    font-weight: 700; white-space: nowrap;
+  }
+  .formula-sub {
+    font-size: 13px; color: var(--text2); flex: 1; min-width: 180px; line-height: 1.6;
+  }
+  .formula-sub strong { color: var(--text); }
+
+  /* Material grid */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 8px; margin-top: 20px;
+  }
+
+  .mat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px; margin-bottom: 20px;
+  }
+  @media(max-width:600px){ .mat-grid{grid-template-columns:repeat(2,1fr);} }
+
+  .mat-btn {
+    padding: 10px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--s1);
+    color: var(--text2);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .mat-btn:hover { border-color: var(--border2); color: var(--text); }
+  .mat-btn.active { border-color: var(--green); background: var(--green-b); color: var(--green); }
+  .mat-btn.wood   { border-color: var(--green); }
+  .mat-name { font-size: 13px; font-weight: 600; }
+  .mat-chem { font-size: 10px; color: var(--text3); margin-top: 3px; font-family: var(--mono); }
+  .mat-btn.active .mat-chem { color: var(--green-d); opacity: 0.8; }
+
+  /* Input row */
+  .input-row {
+    display: flex; gap: 12px; align-items: flex-end;
+    flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .inp-group { display: flex; flex-direction: column; gap: 5px; }
+  .inp-label {
+    font-family: var(--mono); font-size: 11px; color: var(--text3);
+  }
+  .inp-label span { color: var(--purple-l); }
+  input[type=number] {
+    width: 140px; padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border2);
+    background: var(--s2);
+    color: var(--text);
+    font-family: var(--mono); font-size: 15px;
+    outline: none; transition: border-color 0.15s;
+  }
+  input[type=number]:focus { border-color: var(--purple); }
+
+  .calc-btn {
+    padding: 10px 24px; border-radius: 10px;
+    border: 1px solid var(--purple);
+    background: var(--purple-d); color: var(--purple-l);
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .calc-btn:hover { background: var(--purple); color: #fff; }
+  .calc-btn:active { transform: scale(0.97); }
+
+  .play-btn {
+    padding: 10px 20px; border-radius: 10px;
+    border: 1px solid var(--border2);
+    background: var(--s1);
+    color: var(--text2);
+    font-family: var(--sans); font-size: 14px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .play-btn:hover { border-color: var(--green); color: var(--green); }
+  .play-btn.on { border-color: var(--green); background: var(--green-b); color: var(--green); }
+
+  /* Result cards */
+  .result-strip {
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 10px; margin-bottom: 20px;
+  }
+  @media(max-width:500px){ .result-strip{grid-template-columns:1fr 1fr;} }
+  .res-card {
+    background: var(--s1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 16px; text-align: center;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .res-card.flash { border-color: var(--green); background: var(--green-b); }
+  .res-label { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-family: var(--mono); }
+  .res-val {
+    font-size: 22px; font-weight: 700;
+    color: var(--text); font-family: var(--mono);
+    transition: color 0.3s;
+  }
+  .res-card.flash .res-val { color: var(--green); }
+  .res-unit { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+
+  /* Wave canvas */
+  canvas {
+    display: block; width: 100%;
+    height: 90px;
+    border-radius: 10px;
+    background: var(--s1);
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+
+  /* Ranking */
+  .ranking { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .rank-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--s1);
+    transition: background 0.3s, border-color 0.3s;
+  }
+  .rank-row.wood-row { border-color: var(--green); background: var(--green-b); }
+  .rank-row.active-row { border-color: var(--purple); }
+  .rank-pos { font-family: var(--mono); font-size: 11px; color: var(--text3); min-width: 18px; }
+  .rank-name { font-size: 13px; font-weight: 500; color: var(--text); min-width: 90px; }
+  .rank-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .rank-bar { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .rank-v { font-family: var(--mono); font-size: 12px; color: var(--text2); min-width: 80px; text-align: right; }
+  .rank-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: var(--green-b); color: var(--green); font-weight: 600; min-width: 28px; text-align: center; }
+
+  /* Insight */
+  .insight {
+    background: var(--green-b);
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 13px; color: var(--green);
+    line-height: 1.7; display: none;
+    margin-bottom: 20px;
+  }
+  .insight strong { color: #9FE1CB; }
+  .insight-title {
+    font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 8px; opacity: 0.7;
+  }
+
+  /* Two columns layout */
+  .two-col {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px; margin-top: 4px;
+  }
+  @media(max-width:700px){ .two-col{grid-template-columns:1fr;} }
+
+  .col-card {
+    background: var(--s1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+  }
+  .col-card-title {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text3); text-transform: uppercase;
+    letter-spacing: 0.08em; margin-bottom: 12px;
+  }
+
+  /* Question box */
+  .q-box {
+    background: var(--s2); border-left: 2px solid var(--amber);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px; font-size: 13px;
+    color: var(--text2); line-height: 1.65;
+    margin-top: 12px;
+  }
+  .q-box strong { color: var(--amber); }
+
+  .hidden { display: none !important; }
+  .reveal { animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr-tag">STEM Център · Химия · 9–11 клас</div>
+  <h1>Материя и звук<br><span>v = √(E / ρ)</span></h1>
+  <p class="hdr-sub">Защо различните материали звучат различно? Изчисли скоростта на звука и открий изненадата.</p>
+
+  <div class="formula-banner">
+    <div class="formula-main">v = √( E / ρ )</div>
+    <div class="formula-sub">
+      <strong>E</strong> — модул на еластичност (GPa · 10⁹ Pa) &nbsp;·&nbsp;
+      <strong>ρ</strong> — плътност (kg/m³)<br>
+      Колкото по-голямо E/ρ, толкова по-бързо преминава звукът.
+    </div>
+  </div>
+
+  <div class="section-label">Избери материал</div>
+  <div class="mat-grid" id="mat-grid"></div>
+
+  <div class="input-row">
+    <div class="inp-group">
+      <span class="inp-label">E <span>(GPa)</span></span>
+      <input type="number" id="inp-e" value="9" min="0.1" max="500" step="0.1">
+    </div>
+    <div class="inp-group">
+      <span class="inp-label">ρ <span>(kg/m³)</span></span>
+      <input type="number" id="inp-r" value="400" min="1" max="25000" step="1">
+    </div>
+    <button class="calc-btn" onclick="calculate()">▶ Изчисли</button>
+    <button class="play-btn" id="play-btn" onclick="playTone()">Чуй тона 440 Hz</button>
+  </div>
+
+  <div class="result-strip hidden" id="results-strip">
+    <div class="res-card" id="rc-v">
+      <div class="res-label">v — скорост на звука</div>
+      <div class="res-val" id="rv-v">—</div>
+      <div class="res-unit">m/s</div>
+    </div>
+    <div class="res-card" id="rc-l">
+      <div class="res-label">λ при 440 Hz</div>
+      <div class="res-val" id="rv-l">—</div>
+      <div class="res-unit">m</div>
+    </div>
+    <div class="res-card" id="rc-r">
+      <div class="res-label">E/ρ · 10⁻⁶</div>
+      <div class="res-val" id="rv-r">—</div>
+      <div class="res-unit">m²/s²</div>
+    </div>
+  </div>
+
+  <canvas id="wc" class="hidden"></canvas>
+
+  <div class="insight" id="insight">
+    <div class="insight-title">★ Извод</div>
+    <span id="insight-text"></span>
+  </div>
+
+  <div class="two-col hidden" id="two-col-section">
+    <div class="col-card">
+      <div class="col-card-title">Класация по скорост на звука</div>
+      <div class="ranking" id="ranking"></div>
+    </div>
+    <div class="col-card">
+      <div class="col-card-title">Въпроси за дискусия</div>
+      <div class="q-box">
+        <strong>Въпрос 1:</strong> Преди да сметнете — кой материал очаквате да е най-бърз? Запишете предположението.
+      </div>
+      <div class="q-box" style="margin-top:8px;">
+        <strong>Въпрос 2:</strong> Смърчът има E = 9 GPa, бронзът — 120 GPa. Защо смърчът е по-бърз?
+      </div>
+      <div class="q-box" style="margin-top:8px;">
+        <strong>Въпрос 3:</strong> Страдивари е правил цигулки от смърч. Модерните инженери са опитали стомана, карбон, алуминий. Никой не го е надминал. Обяснете с числата защо.
+      </div>
+      <div class="q-box" style="margin-top:8px;">
+        <strong>Въпрос 4:</strong> Въведи стойности за материал по твой избор. Може ли да намериш нещо по-добро от смърча?
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const MATERIALS = [
+  {name:'Смърч',     chem:'целулоза+лигнин', e:9,   r:400,   color:'#2dd4a4', wood:true},
+  {name:'Сребро Ag', chem:'метал · №47',     e:83,  r:10490, color:'#85B7EB', wood:false},
+  {name:'Бронз',     chem:'Cu+Sn сплав',     e:120, r:8800,  color:'#f0a830', wood:false},
+  {name:'Найлон',    chem:'полиамид',         e:3,   r:1150,  color:'#D4537E', wood:false},
+  {name:'Стомана',   chem:'Fe + C',           e:200, r:7800,  color:'#888780', wood:false},
+  {name:'Алуминий',  chem:'метал · №13',      e:69,  r:2700,  color:'#AFA9EC', wood:false},
+  {name:'Стъкло',    chem:'SiO₂',            e:70,  r:2500,  color:'#5DCAA5', wood:false},
+  {name:'Карбон',    chem:'C — полимер',      e:150, r:1600,  color:'#F0997B', wood:false}
+];
+
+let currentV = 0, phase = 0, rafId;
+let audioCtx, osc, gainNode, playing = false;
+let customEntry = null;
+
+// Build material buttons
+const grid = document.getElementById('mat-grid');
+MATERIALS.forEach((m, i) => {
+  const b = document.createElement('div');
+  b.className = 'mat-btn' + (i===0?' active wood':'') + (m.wood&&i!==0?' wood':'');
+  b.innerHTML = `<div class="mat-name">${m.name}</div><div class="mat-chem">${m.chem}</div>`;
+  b.dataset.idx = i;
+  b.onclick = () => {
+    document.querySelectorAll('.mat-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('inp-e').value = m.e;
+    document.getElementById('inp-r').value = m.r;
+    customEntry = null;
+    hideResults();
+  };
+  grid.appendChild(b);
+});
+
+// When user types manually — deselect material and hide results
+['inp-e','inp-r'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    document.querySelectorAll('.mat-btn').forEach(x=>x.classList.remove('active'));
+    customEntry = 'Въведен';
+    hideResults();
+  });
+});
+
+function getActiveName() {
+  const active = document.querySelector('.mat-btn.active .mat-name');
+  return active ? active.textContent : (customEntry || 'Въведен');
+}
+
+function hideResults() {
+  document.getElementById('results-strip').classList.add('hidden');
+  document.getElementById('wc').classList.add('hidden');
+  document.getElementById('two-col-section').classList.add('hidden');
+  document.getElementById('insight').style.display = 'none';
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  currentV = 0;
+}
+
+function revealResults() {
+  const strip = document.getElementById('results-strip');
+  const canvas = document.getElementById('wc');
+  const twocol = document.getElementById('two-col-section');
+  strip.classList.remove('hidden'); strip.classList.add('reveal');
+  canvas.classList.remove('hidden'); canvas.classList.add('reveal');
+  twocol.classList.remove('hidden'); twocol.classList.add('reveal');
+  setTimeout(()=>{strip.classList.remove('reveal');canvas.classList.remove('reveal');twocol.classList.remove('reveal');},500);
+}
+
+function calculate() {
+  const E = parseFloat(document.getElementById('inp-e').value);
+  const rho = parseFloat(document.getElementById('inp-r').value);
+  if (!E || !rho || E<=0 || rho<=0) return;
+
+  const v = Math.sqrt(E * 1e9 / rho);
+  const lambda = v / 440;
+  const ratio = E * 1e9 / rho / 1e6;
+  currentV = v;
+
+  revealResults();
+
+  document.getElementById('rv-v').textContent = Math.round(v).toLocaleString('bg-BG');
+  document.getElementById('rv-l').textContent = lambda.toFixed(2);
+  document.getElementById('rv-r').textContent = ratio.toFixed(1);
+
+  ['rc-v','rc-l','rc-r'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.add('flash');
+    setTimeout(()=>el.classList.remove('flash'), 700);
+  });
+
+  if (osc) osc.frequency.setTargetAtTime(440, audioCtx.currentTime, 0.01);
+
+  updateRanking();
+  showInsight(v, E, rho);
+}
+
+function updateRanking() {
+  const E = parseFloat(document.getElementById('inp-e').value)||9;
+  const rho = parseFloat(document.getElementById('inp-r').value)||400;
+  const activeName = getActiveName();
+
+  let entries = MATERIALS.map(m => ({
+    name: m.name,
+    v: Math.sqrt(m.e*1e9/m.r),
+    color: m.color,
+    wood: m.wood,
+    active: m.name === activeName
+  }));
+
+  if (customEntry) {
+    const cv = Math.sqrt(E*1e9/rho);
+    entries.push({name:'Въведен', v:cv, color:'#7c6ff0', wood:false, active:true});
+  } else {
+    entries = entries.map(e => ({...e, active: e.name===activeName}));
+  }
+
+  entries.sort((a,b)=>b.v-a.v);
+  const maxV = entries[0].v;
+
+  const rankEl = document.getElementById('ranking');
+  rankEl.innerHTML = '';
+  entries.forEach((e,i) => {
+    const row = document.createElement('div');
+    row.className = 'rank-row' + (e.wood?' wood-row':'') + (e.active&&!e.wood?' active-row':'');
+    row.innerHTML = `
+      <span class="rank-pos">${i+1}</span>
+      <span class="rank-name">${e.name}</span>
+      <div class="rank-bar-wrap">
+        <div class="rank-bar" style="width:${(e.v/maxV*100).toFixed(1)}%;background:${e.color}"></div>
+      </div>
+      <span class="rank-v">${Math.round(e.v).toLocaleString('bg-BG')}</span>
+      ${e.wood ? '<span class="rank-badge">★</span>' : '<span style="min-width:28px"></span>'}
+    `;
+    rankEl.appendChild(row);
+  });
+}
+
+function showInsight(v, E, rho) {
+  const vSpruce = Math.sqrt(9e9/400);
+  const vBronze = Math.sqrt(120e9/8800);
+  const box = document.getElementById('insight');
+  const txt = document.getElementById('insight-text');
+  const diff = Math.abs(v - vSpruce);
+
+  if (diff < 300 && v > 4000) {
+    txt.innerHTML = `Смърчът има <strong>E само 9 GPa</strong> — 13× по-малко от бронза (120 GPa). Но плътността му е <strong>22× по-малка</strong> (400 срещу 8800 kg/m³). Резултатът: E/ρ = <strong>${(9e9/400/1e6).toFixed(0)} ×10⁶</strong> — по-голямо от бронза (${(120e9/8800/1e6).toFixed(0)} ×10⁶). Природата е проектирала клетъчната стена от целулоза и лигнин така, че да е едновременно твърда и лека. Затова Страдивари е избрал дърво.`;
+    box.style.display = 'block';
+  } else if (v > vSpruce + 300) {
+    txt.innerHTML = `Този материал провежда звука по-бързо от смърча. Но скоростта е само един фактор — демпфирането, резонансът и обработката също определят качеството на инструмента.`;
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+// Wave animation
+function drawWave() {
+  const canvas = document.getElementById('wc');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth, H = 90;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0,0,W,H);
+
+  const mid = H/2;
+  ctx.strokeStyle = '#1c1c22'; ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(0,mid); ctx.lineTo(W,mid); ctx.stroke();
+
+  if (currentV > 0) {
+    const cycles = Math.max(1.5, Math.min(9, currentV/700));
+    const wLen = W / cycles;
+    const A = 28;
+
+    ctx.strokeStyle = '#7c6ff0'; ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#534AB7'; ctx.shadowBlur = 6;
+    ctx.beginPath();
+    for (let x=0; x<=W; x++) {
+      const y = mid - A * Math.sin(2*Math.PI*x/wLen + phase);
+      x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    const lambda = currentV/440;
+    const lx = 20, lx2 = Math.min(lx + wLen, W-20);
+    ctx.strokeStyle = '#2dd4a4'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(lx,mid+36); ctx.lineTo(lx2,mid+36); ctx.stroke();
+    [lx,lx2].forEach(x=>{ctx.beginPath();ctx.moveTo(x,mid+31);ctx.lineTo(x,mid+41);ctx.stroke();});
+    ctx.fillStyle = '#2dd4a4'; ctx.font = '11px "Space Mono",monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('λ = ' + lambda.toFixed(2) + ' m', lx+(lx2-lx)/2, mid+54);
+
+    const vEl = document.getElementById('rv-v');
+    if (vEl.textContent !== '—') {
+      ctx.fillStyle = '#3a3a50'; ctx.font = '11px "Space Mono",monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('v = ' + Math.round(currentV).toLocaleString('bg-BG') + ' m/s', W-16, 18);
+    }
+  }
+
+  phase += 0.05;
+  rafId = requestAnimationFrame(drawWave);
+}
+
+drawWave();
+
+function playTone() {
+  const btn = document.getElementById('play-btn');
+  if (!playing) {
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    gainNode = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime+0.06);
+    osc = audioCtx.createOscillator();
+    osc.type = 'sine'; osc.frequency.value = 440;
+    osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+    osc.start();
+    playing = true;
+    btn.textContent = '■ Спри тона'; btn.classList.add('on');
+  } else {
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.06);
+    setTimeout(()=>{try{osc.stop();audioCtx.close();}catch(e){}},120);
+    playing=false; osc=null; gainNode=null;
+    btn.textContent='Чуй тона 440 Hz'; btn.classList.remove('on');
+  }
+}
+
+// Start wave animation loop (empty canvas until first calculate)
+drawWave();
+</script>
+</body>
+</html>
